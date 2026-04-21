@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MODES — Advanced Exercises</title>
+<!-- AlphaTab: pinned to stable 1.3.x, avoids @latest breakage -->
+<script src="https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.3.0/dist/alphaTab.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+  :root {
+    --bg:         #0d0d0b;
+    --paper:      #14140f;
+    --border:     #2a2a1f;
+    --ink:        #e8e4d4;
+    --ink-dim:    #8a8470;
+    --gold:       #c9a84c;
+    --gold-dim:   #7a6228;
+    --ionian:     #c9a84c;
+    --dorian:     #4c9a5a;
+    --phrygian:   #c94c4c;
+    --lydian:     #4cc9c2;
+    --mixolydian: #c9784c;
+    --aeolian:    #7a4cc9;
+    --locrian:    #8a8470;
+    --violet:     #9a6ce9;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* grain texture overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999; opacity: 0.4;
+  }
+
+  /* ── HEADER ─────────────────────────────────── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 60px 40px 50px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,168,76,.05) 0%, transparent 70%);
+  }
+  .masthead-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; letter-spacing: 0.3em;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 20px;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(44px, 7vw, 80px);
+    font-weight: 900; letter-spacing: -0.02em; line-height: 0.95;
+    color: var(--ink); margin-bottom: 20px;
+  }
+  h1 em { font-style: italic; color: var(--gold); }
+  .masthead-sub {
+    font-family: 'Libre Baskerville', serif;
+    font-style: italic; font-size: 17px;
+    color: var(--ink-dim); max-width: 580px; margin: 0 auto 30px;
+  }
+  .masthead-rule {
+    display: flex; align-items: center; gap: 20px; justify-content: center;
+    color: var(--gold-dim); font-family: 'DM Mono', monospace;
+    font-size: 11px; letter-spacing: 0.2em;
+  }
+  .masthead-rule::before, .masthead-rule::after {
+    content: ''; display: block; height: 1px; width: 60px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim));
+  }
+  .masthead-rule::after { transform: scaleX(-1); }
+
+  /* ── NAV ─────────────────────────────────────── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,13,11,.93); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px; display: flex;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  nav a {
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--ink-dim); text-decoration: none;
+    padding: 16px 14px; border-bottom: 2px solid transparent;
+    white-space: nowrap; transition: color 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+  }
+  nav a:hover, nav a.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  /* ── LAYOUT ──────────────────────────────────── */
+  .page { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 56px 0; border-bottom: 1px solid var(--border); }
+
+  .section-label {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.4em; color: var(--gold);
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  h2 { font-family: 'Playfair Display', serif; font-size: clamp(24px,3.5vw,38px); font-weight: 700; line-height: 1.1; margin-bottom: 12px; }
+  h3 { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; margin-bottom: 10px; }
+  h4 { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 10px; }
+  p { margin-bottom: 14px; color: var(--ink); opacity: 0.88; }
+  strong { color: var(--gold); font-weight: 700; }
+
+  /* ── EXERCISE CARD ───────────────────────────── */
+  .ex-card {
+    background: var(--paper); border: 1px solid var(--border);
+    border-radius: 4px; margin: 28px 0; overflow: hidden;
+    /* --mode-color set via inline style on each card */
+  }
+  .ex-header {
+    padding: 20px 26px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 16px;
+    flex-wrap: wrap; position: relative;
+  }
+  .ex-header::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: var(--mode-color, var(--gold));
+  }
+  .ex-num {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.3em; color: var(--mode-color, var(--gold));
+    text-transform: uppercase; margin-bottom: 5px;
+  }
+  .ex-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
+  .ex-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .badge {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.12em; padding: 3px 9px;
+    border-radius: 2px; text-transform: uppercase; border: 1px solid;
+  }
+  .ex-body { padding: 26px; }
+  .difficulty { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--gold); flex-shrink: 0; }
+
+  /* ── ALPHATAB WRAPPER ────────────────────────── */
+  .notation-section { margin: 22px 0; }
+  .notation-label {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.35em; color: var(--gold);
+    text-transform: uppercase; margin-bottom: 10px;
+  }
+
+  /* Outer wrapper — white background for music engraving */
+  .at-wrap {
+    background: #faf8f2;
+    border-radius: 4px;
+    border: 1px solid #d0c8b0;
+    min-height: 180px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* AlphaTab renders INTO .at-surface div we create per score */
+  .at-surface {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  /* Loading / error state overlay */
+  .at-overlay {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: #faf8f2;
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    letter-spacing: 0.2em; color: #8a7a5a; text-transform: uppercase;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .at-overlay.hidden { opacity: 0; }
+
+  /* Fallback plain-text tab (shown if AlphaTab fails) */
+  .tab-fallback {
+    display: none;
+    background: #0a0a08; border: 1px solid var(--border);
+    border-radius: 4px; padding: 18px 22px; margin-top: 10px; overflow-x: auto;
+  }
+  .tab-fallback.visible { display: block; }
+  .tab-fallback pre {
+    font-family: 'DM Mono', monospace; font-size: 13px;
+    line-height: 1.9; color: var(--ink-dim); white-space: pre;
+  }
+  .tab-fallback-label {
+    font-family: 'DM Mono', monospace; font-size: 9px;
+    letter-spacing: 0.3em; color: var(--gold);
+    text-transform: uppercase; margin-bottom: 10px;
+  }
+
+  /* ── CHORD VOICINGS ──────────────────────────── */
+  .voicing-grid { display: flex; gap: 16px; flex-wrap: wrap; margin: 14px 0; }
+  .voicing-item {
+    background: #0a0a08; border: 1px solid var(--border);
+    border-radius: 4px; padding: 14px 16px; min-width: 130px;
+  }
+  .voicing-name {
+    font-family: 'Playfair Display', serif; font-size: 17px;
+    font-weight: 700; color: var(--mode-color, var(--gold)); margin-bottom: 3px;
+  }
+  .voicing-type {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    color: var(--ink-dim); letter-spacing: 0.1em; margin-bottom: 8px;
+  }
+  .voicing-frets {
+    font-family: 'DM Mono', monospace; font-size: 13px;
+    color: var(--ink); letter-spacing: 0.15em;
+  }
+  .voicing-fingering {
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    color: var(--ink-dim); margin-top: 4px;
+  }
+
+  /* ── BACKING BAR ─────────────────────────────── */
+  .backing-bar {
+    background: #0a0a08; border: 1px solid var(--border);
+    border-radius: 4px; padding: 12px 18px; margin: 14px 0;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .backing-label {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.3em; color: var(--ink-dim);
+    text-transform: uppercase; flex-shrink: 0;
+  }
+  .backing-chord {
+    font-family: 'Playfair Display', serif; font-size: 15px;
+    font-weight: 700; padding: 3px 12px;
+    border: 1px solid var(--border); border-radius: 2px; color: var(--ink-dim);
+  }
+  .backing-chord.active { border-color: var(--mode-color, var(--gold)); color: var(--mode-color, var(--gold)); }
+  .backing-arrow { color: var(--ink-dim); font-family: 'DM Mono', monospace; font-size: 12px; }
+  .backing-tempo { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-dim); }
+
+  /* ── INSIGHT / INTERCHANGE ───────────────────── */
+  .insight {
+    background: rgba(201,168,76,.05); border-left: 3px solid var(--gold);
+    padding: 16px 20px; margin: 20px 0; border-radius: 0 4px 4px 0;
+  }
+  .insight-label {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.3em; color: var(--gold);
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .interchange {
+    background: rgba(122,76,201,.05); border: 1px solid rgba(122,76,201,.25);
+    border-radius: 4px; padding: 18px 22px; margin: 18px 0;
+  }
+  .interchange-label {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.3em; color: var(--violet);
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+
+  /* ── MISC ────────────────────────────────────── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+  .note-legend {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    margin: 10px 0; align-items: center;
+  }
+  .legend-item {
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    color: var(--ink-dim); display: flex; align-items: center; gap: 6px;
+  }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--mode-color, var(--gold)); }
+
+  .ornament { text-align: center; color: var(--gold-dim); font-size: 18px; letter-spacing: 0.5em; margin: 40px 0; }
+
+  .back-top {
+    position: fixed; bottom: 28px; right: 28px;
+    background: var(--paper); border: 1px solid var(--border);
+    color: var(--gold); font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 0.2em;
+    padding: 10px 14px; border-radius: 2px;
+    text-decoration: none; z-index: 50;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .back-top.visible { opacity: 1; }
+
+  /* borrowed-chord inline highlight */
+  .borrow { color: var(--violet); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div id="courseNav" style="
+  background:#0a0a08;
+  border-bottom:1px solid #2a2a1f;
+  padding:0 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  position:sticky;
+  top:0;
+  z-index:200;
+  backdrop-filter:blur(8px);
+">
+  <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.3em;color:#7a6228;text-transform:uppercase;padding:14px 0;flex-shrink:0">
+    Modal Guitar Course
+  </div>
+  <div style="display:flex;gap:4px;align-items:center">
+    <a href="modes-course.html" style="
+      font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.15em;
+      text-transform:uppercase;padding:8px 16px;border-radius:2px;
+      border:1px solid #2a2a1f;color:#8a8470;text-decoration:none;
+      flex-shrink:0;transition:color 0.2s,border-color 0.2s;
+    " onmouseover="this.style.color='#c9a84c';this.style.borderColor='#c9a84c50'"
+       onmouseout="this.style.color='#8a8470';this.style.borderColor='#2a2a1f'"
+    >← ① The Lesson</a>
+    <span style="color:#3a3a2a;font-size:14px;padding:0 4px">→</span>
+    <span style="
+      font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.15em;
+      text-transform:uppercase;padding:8px 16px;border-radius:2px;
+      background:#c9a84c18;color:#c9a84c;border:1px solid #c9a84c50;
+      flex-shrink:0;
+    ">② Advanced Exercises</span>
+  </div>
+</div>
+
+<header>
+  <div class="masthead-label">Advanced Exercises — Pro Level</div>
+  <h1>MODES IN<br><em>PRACTICE</em></h1>
+  <p class="masthead-sub">Professional notation + rhythm tab rendered with AlphaTab — the same engine as Guitar Pro. Sheet music, voicings, advanced licks, and modal interchange.</p>
+  <div class="masthead-rule">Notation · Rhythm Tab · Voicings · Interchange</div>
+</header>
+
+<nav id="mainNav">
+  <a href="#ex1">I · Ionian</a>
+  <a href="#ex2">II · Dorian</a>
+  <a href="#ex3">III · Phrygian</a>
+  <a href="#ex4">IV · Lydian</a>
+  <a href="#ex5">V · Mixolydian</a>
+  <a href="#ex6">VI · Aeolian</a>
+  <a href="#ex7">VII · Locrian</a>
+  <a href="#ex8">ii–V–I</a>
+  <a href="#ex9">Minor Trio</a>
+  <a href="#ex10">Interchange</a>
+</nav>
+
+<div class="page">
+
+<!-- ════════════════════════════════════════════
+     EX 1 — C IONIAN
+════════════════════════════════════════════ -->
+<section id="ex1">
+  <div class="section-label">Exercise 01</div>
+  <div class="ex-card" style="--mode-color:var(--ionian)">
+    <div class="ex-header">
+      <div>
+        <div class="ex-num">Mode I · C Ionian</div>
+        <div class="ex-title">The Lydian Flirt — Legato Major Run</div>
+        <div class="ex-badges">
+          <span class="badge" style="color:var(--ionian);border-color:rgba(201,168,76,.4)">Ionian</span>
+          <span class="badge" style="color:var(--ink-dim);border-color:var(--border)">Legato</span>
+          <span class="badge" style="color:var(--ink-dim);border-color:var(--border)">Position Shift</span>
+        </div>
+      </div>
+      <div class="difficulty">★★★☆☆</div>
+    </div>
+    <div class="ex-body">
+      <p>A major scale run in 8th position that briefly <strong>implies Lydian colour</strong> by landing on the #4 (B♮ over F) as a chromatic peak, then resolving back down to the major 3rd (E). Played entirely legato — pick only the first note per string.</p>
+
+      <div class="backing-bar" style="--mode-color:var(--ionian)">
+        <div class="backing-label">Over</div>
+        <div class="backing-chord active">Cmaj7</div>
+        <div class="backing-arrow">→</div>
+        <div class="backing-chord">Fmaj7#11</div>
+        <div class="backing-arrow">→</div>
+        <div class="backing-chord active">Cmaj7</div>
+        <div class="backing-tempo">♩= 92</div>
+      </div>
+
+      <div class="notation-section">
+        <div class="notation-label">Notation + Rhythm Tab</div>
+        <div class="at-wrap" id="wrap1">
+          <div class="at-overlay" id="ov1">Engraving notation…</div>
+          <div class="at-surface" id="surf1"></div>
+        </div>
+        <div class="tab-fallback" id="fb1">
+          <div class="tab-fallback-label">Guitar Tab</div>
+          <pre>
+e|--8h10-12-13b-12-10-8h10-12----|
+B|-------------------------------10-|
+G|----------------------------------|
+D|----------------------------------|
+A|----------------------------------|
+E|----------------------------------|
+          </pre>
+        </div>
+      </div>
+
+      <div class="note-legend" style="--mode-color:var(--ionian)">
+        <div class="legend-item"><div class="legend-dot"></div>C root (8th fret e string)</div>
+        <div class="legend-item">h=hammer · b=bend · r=release</div>
+      </div>
+
+      <h4 style="margin-top:18px">Jazz Voicings — Ionian Context</h4>
+      <div class="voicing-grid" style="--mode-color:var(--ionian)">
+        <div class="voicing-item">
+          <div class="voicing-name">Cmaj9</div>
+          <div class="voicing-type">Tonic — open resonance</div>
+          <div class="voicing-frets">x 3 2 0 3 0</div>
+          <div class="voicing-fingering">· 2 1 · 3 ·</div>
+        </div>
+        <div class="voicing-item">
+          <div class="voicing-name">Fmaj7#11</div>
+          <div class="voicing-type">Lydian colour chord</div>
+          <div class="voicing-frets">x x 3 2 1 2</div>
+          <div class="voicing-fingering">· · 4 3 1 2</div>
+        </div>
+        <div class="voicing-item">
+          <div class="voicing-name">Em11</div>
+          <div class="voicing-type">iii — mediant passing colour</div>
+          <div class="voicing-frets">0 2 2 0 3 0</div>
+          <div class="voicing-fingering">· 1 2 · 4 ·</div>
+        </div>
+      </div>
+
+      <div class="interchange">
+        <div class="interchange-label">Modal Interchange — Ionian ↔ Lydian</div>
+        <p style="margin:0;font-size:14px">When Fmaj7#11 arrives, your melody can briefly borrow <strong>B♮ (#4 of F Lydian)</strong> as its peak note — one semitone above the diatonic F. That single chromatic note creates the "floating lift" of film scores before Ionian resolves it back to E.</p>
+      </div>
+
+      <div class="insight">
+        <div class="insight-label">Pro Technique — Legato Economy</div>
+        <p style="margin:0;font-size:14px">Pick only the first note per string; slur everything after. Your right hand barely moves. The result is a fluid, vocal line that alternate-picked scale runs simply cannot match.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     EX 2 — D DORIAN
+════════════════════════════════════════════ -->
+<section id="ex2">
+  <div class="section-label">Exercise 02</div>
+  <div class="ex-card" style="--mode-color:var(--dorian)">
+    <div class="ex-header">
+      <div>
+        <div class="ex-num">Mode II · D Dorian</div>
+        <div class="ex-title">The Soul Bend — String-Skip + Wide Intervals</div>
+        <div class="ex-badges">
+          <span class="badge" style="color:var(--dorian);border-color:rgba(76,154,90,.4)">Dorian</span>
+          <span class="badge" style="color:var(--ink-dim);border-color:var(--border)">String Skipping</span>
+          <span class="badge" style="color:var(--ink-dim);border-color:var(--border)">Characteristic Bend</span>
+        </div>
+      </div>
+      <div class="difficulty">★★★★☆</div>
+    </div>
+    <div class="ex-body">
+      <p>The <strong>major 6th (B♮)</strong> is Dorian's identity. This lick bends up to it from A (a whole step below), then uses a string-skip leap to create a non-linear, vocal contour. The entire Santana vocabulary is built on this one gesture.</p>
+
+      <div class="backing-bar" style="--mode-color:var(--dorian)">
+        <div class="backing-label">Over</div>
+        <div class="backing-chord active">Dm9</div>
+        <div class="backing-arrow">→</div>
+        <div class="backing-chord">G13</div>
+        <div class="backing-arrow">→</div>
+        <div class="backing-chord active">Dm9</div>
+        <div class="backing-tempo">♩= 84 · funk</div>
+      </div>
+
+      <div class="notation-section">
+        <div class="notation-label">Notation + Rhythm Tab</div>
+        <div class="at-wrap" id="wrap2">
+          <div class="at-overlay" id="ov2">Engraving notation…</div>
+          <div class="at-surface" id="surf2"></div>
+        </div>
+        <div class="tab-fallback" id="fb2">
+          <div class="tab-fallback-label">Guitar Tab</div>
+          <pre>
+e|--------10-----------12b13-12-10---|
+B|------10---10------10--------------|
+G|----9----------9-------------------|
+D|--12----------------------------12-|
+A|-----------------------------------|
+E|-----------------------------------|
+          </pre>
+        </div>
+      </div>
+
+      <h4 style="margin-top:18px">Dorian Jazz Voicings</h4>
+      <div class="voicing-grid" style="--mode-color:var(--dorian)">
+        <div class="voicing-item">
+          <div class="voicing-name">Dm9</div>
+          <div class="voicing-type">Dorian tonic</div>
+          <div class="voicing-frets">x 5 3 5 5 5</div>
+          <div class="voicing-fingering">· 3 1 4 4 4</div>
+        </div>
+        <div class="voicing-item">
+          <div class="voicing-name">G13</div>
+          <div class="voicing-type">Dominant partner</div>
+          <div class="voicing-frets">3 x 3 4 5 3</div>
+          <div class="voicing-fingering">1 · 2 3 4 1</div>
+        </div>
+        <div class="voicing-item">
+          <div class="voicing-name">Dm7/C</div>
+          <div class="voicing-type">Jazz moving bass</div>
+          <div class="voicing-frets">x 3 x 2 1 1</div>
+          <div class="voicing-fingering">· 3 · 2 1 1</div>
+        </div>
+      </div>
+
+      <div class="interchange">
+        <div class="interchange-label">Modal Interchange — Dorian ↔ Aeolian</div>
+        <p style="margin:0;font-size:14px">Dorian and Aeolian differ by <strong>one semitone: B♮ vs B♭</strong>. Bend to B♮ for soulful warmth, flatten to B♭ for darkness — mid-phrase. That single chromatic gesture is Santana's entire emotional vocabulary.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     EX 3 — E PHRYGIAN
+════════════════════════════════════════════ -->
+<section id="ex3">
+  <div class="section-label">Exercise 03</div>
+  <div class="ex-card" style="--mode-color:var(--phrygian)">
+    <div class="ex-header">
+      <div>
+        <div class="ex-num">Mode III · E Phrygian</div>
+        <div class="ex-title">The Half-Step Coil — Chromatic Enclosure</div>
+        <div class="ex-badges">
+          <span class="badge" style="color:var(--phrygian);border-color:rgba(201,76,76,.4)">Phrygian</span>
+          <span class="badge" style="color:var(--phrygian);border-color:rgba(201,76,76,.4)">Phrygian Dominant</span>
+          <span class="badge" style="color:var(--ink-dim);border-color:var(--border)">Chromatic Approach</span>
+        </div>
+      </div>
+      <div class="difficulty">★★★★☆</div>
+    </div>
+    <div class="ex-body">
+      <p>Phrygian's ♭2 (F over E) sits a half-step above the root — maximum tension. This lick uses a <strong>chromatic enclosure</strong>: approach E from above (F) and below (D#), then resolve. Straight from jazz harmony applied to flamenco/metal guitar.</p>
+
+      <div class="backing-bar" style="--mode-color:var(--phrygian)">
+        <div class="backing-label">Over</div>
+        <div class="backing-chord active">Em</div>
+        <div class="backing-arrow">→</div>
+        <div class="backing-chord active">F</div>
+        <div class="backing-arrow">→</div>
+        <div class="backing-chord active">Em</div>
+        <div class="backing-tempo">♩= 120</div>
+      </div>
+
+      <div class="notation-section">
+        <div class="notation-label">Notation + Rhythm Tab</div>
+        <div class="at-wrap" id="wrap3">
+          <div class="at-overlay" id="ov3">Engraving notation…</div>
+          <div class="at-surface" id="surf3"></div>
+        </div>
+        <div class="tab-fallback" id="fb3">
+          <div class="tab-fallback-label">Guitar Tab</div>
+          <pre>
+e|--0-1-0-3-2-0-2-3-5-3-2-0--------|
+B|--------------------------------3-|
+G|----------------------------------|
+D|----------------------------------|
+          </pre>
+        </div>
+      </div>
+
+      <h4 style="margin-top:18px">Phrygian Voicings</h4>
+      <div class="voicing-grid" style="--mode-color:var(--phrygian)">
+        <div class="voicing-item">
+          <div class="voicing-name">Em(add♭2)</div>
+          <div class="voicing-type">Phrygian tonic</div>
+          <div class="voicing-frets">0 2 2 1 0 0</div>
+          <div class="voicing-fingering">· 2 3 1 · ·</div>
+        </div>
+        <div class="voicing-item">
+          <div class="voicing-name">Fmaj7/E</div>
+          <div class="voicing-type">♭II/I — the Phrygian sound</div>
+          <div class="voicing-frets">0 x 3 2 1 0</div>
+          <div class="voicing-fingering">· · 3 2 1 ·</div>
+        </div>
+        <div class="voicing-item">
+          <div class="voicing-name">E7(♭9)</div>
+          <div class="voicing-type">Phrygian Dominant</div>
+          <div class="voicing-frets">0 2 0 1 3 0</div>
+          <div class="voicing-fingering">· 1 · 2 4 ·</div>
+        </div>
+      </div>
+
+      <div class="interchange">
+        <div class="interchange-label">Phrygian → Phrygian Dominant</div>
+        <p style="margin:0;font-size:14px">Raise the ♭3 (G) to G# and you have <strong>Phrygian Dominant</strong>: E F G# A B C D. The augmented 2nd between F and G# is the entire sound of Andalusian flamenco. Add G# anywhere in this lick for instant Spanish flavour.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     EX 4 — F LYDIAN
+════════════════════════════════════════════ -->
+<section id="ex4">
+  <div class="section-label">Exercise 04</div>
+  <div class="ex-card" style="--mode-color:var(--lydian)">
+    <div class="ex-header">
+      <div>
+        <div class="ex-num">Mode IV · F Lydian</div>
+        <div class="ex-title">The Satriani Float — Sweep Arpeggio</div>
+        <div class="ex-badges">
+          <span class="badge" style="color:var(--lydian);border-color:rgba(76,201,194,.4)">Lydian</span>
+          <span class="badge" style="color:var(--ink-dim);border-color:var(--border)">Sweep Arpeggio</span>
+          <span class="badge" style="color:var(--ink-dim);border-color:var(--border)">Tritone Peak</span>
+        </div>
+      </div>
+      <div class="difficulty">★★★★★</div>
+    </div>
+    <div class="ex-body">
+      <p>Sweep an <strong>Fmaj7#11 arpeggio</strong> across all six strings, placing the tritone (B♮, #4) at the apex. The sweep makes the tension feel earned — not a passing note but the emotional climax. This is the Satriani/Vai approach: make the #4 beautiful, not scary.</p>
+
+      <div class="backing-bar" style="--mode-color:var(--lydian)">
+        <div class="backing-label">Over</div>
+        <div class="backing-chord active">Fmaj7#11</div>
+        <div class="backing-arrow">→</div>
+        <div class="backing-chord">G</div>
+        <div class="backing-arrow">→</div>
+        <div class="backing-chord active">Fmaj7#11</div>
+        <div class="backing-tempo">♩= 76 · spacious</div>
+      </div>
+
+      <div class="notation-section">
+        <div class="notation-label">Notation + Rhythm Tab</div>
+        <div class="at-wrap" id="wrap4">
+          <div class="at-overlay" id="ov4">Engraving notation…</div>
+          <div class="at-surface" id="surf4"></div>
+        </div>
+        <div class="tab-fallback" id="fb4">
+          <div class="tab-fallback-label">Guitar Tab — sweep down, pick ascent</div>
+          <pre>
+e|-----------------------------13----|
+B|---------------------------13------|
+G|-------------------------14--------|
+D|-----------------------15----------|
+A|---------------------15------------|
+E|--13-----------------------13------|
+   ← sweep down →        ← back up →
+          </pre>
+        </div>
+      </div>
+
+      <h4 style="margin-top:18px">Lydian Voicings</h4>
+      <div class="voicing-grid" style="--mode-color:var(--lydian)">
+        <div class="voicing-item">
+          <div class="voicing-name">Fmaj7#11</div>
+          <div class="voicing-type">The definitive Lydian chord</div>
+          <div class="voicing-frets">x x 3 2 1 2</div>
+          <div class="voicing-fingering">· · 4 3 1 2</div>
+        </div>
+        <div class="voicing-item">
+          <div class="voicing-name">Gmaj/F</div>
+          <div class="voicing-type">Lydian polychord</div>
+          <div class="voicing-frets">1 x 0 0 0 2</div>
+          <div class="voicing-fingering">G triad over F bass</div>
+        </div>
+      </div>
+
+      <div class="interchange">
+        <div class="interchange-label">Modal Interchange — Lydian → Ionian (the "landing")</div>
+        <p style="margin:0;font-size:14px">Build tension with B♮ (#4), then resolve by dropping to <strong>B♭ (Ionian's natural 4th)</strong>. That one-semitone fall is the "landing" — dream to reality. Film composers use it at every emotional climax.</p>
+      </div>
+
+      <div class="insight">
+        <div class="insight-label">Sweep Technique</div>
+        <p style="margin:0;font-size:14px">One continuous downstroke across all strings — mute each note with the fretting hand immediately after it sounds. Never let notes blur together. The result is a harp-like cascade, not a strummed chord. Keep the pick angle shallow.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     EX 5 — G MIXOLYDIAN
+════════════════════════════════════════════ -->
+<section id="ex5">
+  <div class="section-label">Exercise 05</div>
+  <div class="ex-card" style="--mode-color:var(--mixolydian)">
+    <div class="ex-header">
+      <div>
+        <div class="ex-num">Mode V · G Mixolydian</div>
+        <div class="ex-title">The Dominant Burn — Blues-Rock Hybrid</div>
+        <div class="ex-badges">
+          <span class="badge" style="color:var(--mixolydian);border-color:rgba(201,120,76,.4)">Mixolydian</span>
+          <span class="badge" style="color:var(--ink-dim);border-color:var(--border)">Pentatonic Hybrid</span>
+          <span class="badge" style="color:var(--ink-dim);border-color:var(--border)">Blues Curl</span>
+        </div>
+      </div>
+      <div class="difficulty">★★★☆☆</div>
+    </div>
+    <div class="ex-body">
+      <p>Add the <strong>2nd (A) and 6th (E)</strong> to G minor pentatonic and you have full Mixolydian. The ♭7 (F) is the money note — every phrase should land on or pass through it. This is the blues-rock hybrid behind virtually every classic rock solo.</p>
+
+      <div class="backing-bar" style="--mode-color:var(--mixolydian)">
+        <div class="backing-label">Over</div>
+        <div class="backing-chord active">G7</div>
+        <div class="backing-arrow">→</div>
+        <div class="backing-chord">C9</div>
+        <div class="backing-arrow">→</div>
+        <div class="backing-chord active">G7</div>
+        <div class="backing-tempo">♩= 100 · shuffle</div>
+      </div>
+
+      <div class="notation-section">
+        <div class="notation-label">Notation + Rhythm Tab</div>
+        <div class="at-wrap" id="wrap5">
+          <div class="at-overlay" id="ov5">Engraving notation…</div>
+          <div class="at-surface" id="surf5"></div>
+        </div>
+        <div class="tab-fallback" id="fb5">
+          <div class="tab-fallback-label">Guitar Tab</div>
+          <pre>
+e|--3-5-3--------------3-5-3--------|
+B|--------5-3-1---3b3.5-------------|
+G|-------------------2-4-5-4-2------|
+D|--3-5---------------------------5-|
+A|5---------------------------------|
+E|3---------------------------------|
+          </pre>
+        </div>
+      </div>
+
+      <h4 style="margin-top:18px">Dominant Voicings</h4>
+      <div class="voicing-grid" style="--mode-color:var(--mixolydian)">
+        <div class="voicing-item">
+          <div class="voicing-name">G9</div>
+          <div class="voicing-type">Full Mixolydian colour</div>
+          <div class="voicing-frets">3 x 3 2 3 3</div>
+          <div class="voicing-fingering">2 · 3 1 4 4</div>
+        </div>
+        <div class="voicing-item">
+          <div class="voicing-name">G7sus4</div>
+          <div class="voicing-type">No 3rd — modal ambiguity</div>
+          <div class="voicing-frets">3 x 3 0 1 3</div>
+          <div class="voicing-fingering">2 · 3 · 1 4</div>
+        </div>
+        <div class="voicing-item">
+          <div class="voicing-name">G13</div>
+          <div class="voicing-type">Jazz/funk — full extension</div>
+          <div class="voicing-frets">3 x 3 4 5 3</div>
+          <div class="voicing-fingering">1 · 2 3 4 1</div>
+        </div>
+      </div>
+
+      <div class="interchange">
+        <div class="interchange-label">Modal Interchange — Mixolydian ↔ Dorian</div>
+        <p style="margin:0;font-size:14px">Over G7, swap <strong>B♮ (major 3rd) for B♭ (minor 3rd)</strong> to enter G Dorian territory. This minor-over-dominant is the heart of blues — Clapton, Page, and King constantly oscillate between B♮ and B♭. It's not wrong notes; it's the vocabulary.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     EX 6 — A AEOLIAN
+════════════════════════════════════════════ -->
+<section id="ex6">
+  <div class="section-label">Exercise 06</div>
+  <div class="ex-card" style="--mode-color:var(--aeolian)">
+    <div class="ex-header">
+      <div>
+        <div class="ex-num">Mode VI · A Aeolian</div>
+        <div class="ex-title">The Baroque Descent — Diatonic 3rds Sequence</div>
+        <div class="ex-badges">
+          <span class="badge" style="color:var(--aeolian);border-color:rgba(122,76,201,.4)">Aeolian</span>
+          <span class="badge" style="color:var(--ink-dim);border-color:var(--border)">Diatonic Sequence</span>
+          <span class="badge" style="color:var(--ink-dim);border-color:var(--border)">Harmonic Minor</span>
+        </div>
+      </div>
+      <div class="difficulty">★★★★☆</div>
+    </div>
+    <div class="ex-body">
+      <p>The same two-note intervallic shape repeated from each scale degree — a <strong>descending diatonic sequence in 3rds</strong>. Straight from Bach applied to electric guitar. The ♭6 (F over A) is the emotional peak: hold it with vibrato before continuing the descent.</p>
+
+      <div class="backing-bar" style="--mode-color:var(--aeolian)">
+        <div class="backing-label">Over</div>
+        <div class="backing-chord active">Am</div>
+        <div class="backing-arrow">→</div>
+        <div class="backing-chord">G</div>
+        <div class="backing-arrow">→</div>
+        <div class="backing-chord">F</div>
+        <div class="backing-arrow">→</div>
+        <div class="backing-chord">Em</div>
+        <div class="backing-tempo">♩= 68 · ballad</div>
+      </div>
+
+      <div class="notation-section">
+        <div class="notation-label">Notation + Rhythm Tab</div>
+        <div class="at-wrap" id="wrap6">
+          <div class="at-overlay" id="ov6">Engraving notation…</div>
+          <div class="at-surface" id="surf6"></div>
+        </div>
+        <div class="tab-fallback" id="fb6">
+          <div class="tab-fallback-label">Guitar Tab — descending 3rds sequence</div>
+          <pre>
+e|--5-8~-7-5-7-5-3-5-3-2-3-2-0-2-0--|
+B|--------------------------------3--|
+G|-----------------------------------|
+          </pre>
+        </div>
+      </div>
+
+      <h4 style="margin-top:18px">Aeolian Voicings</h4>
+      <div class="voicing-grid" style="--mode-color:var(--aeolian)">
+        <div class="voicing-item">
+          <div class="voicing-name">Am(maj7)</div>
+          <div class="voicing-type">Cinematic tension tonic</div>
+          <div class="voicing-frets">x 0 2 1 1 0</div>
+          <div class="voicing-fingering">· · 3 1 1 ·</div>
+        </div>
+        <div class="voicing-item">
+          <div class="voicing-name">Fmaj7</div>
+          <div class="voicing-type">♭VI — Aeolian signature</div>
+          <div class="voicing-frets">1 x 2 2 1 3</div>
+          <div class="voicing-fingering">1 · 2 3 1 4</div>
+        </div>
+        <div class="voicing-item">
+          <div class="voicing-name">Em7♭5</div>
+          <div class="voicing-type">vii° — half-dim tension</div>
+          <div class="voicing-frets">0 x 2 3 3 3</div>
+          <div class="voicing-fingering">· · 1 2 2 2</div>
+        </div>
+      </div>
+
+      <div class="interchange">
+        <div class="interchange-label">Aeolian → Harmonic Minor</div>
+        <p style="margin:0;font-size:14px">Raise the ♭7 (G) to G# and you enter <strong>Harmonic Minor</strong>. The augmented 2nd between F (♭6) and G# (♮7) is one of the most dramatic intervals in music — Bach, Vivaldi, Malmteen. Use it at cadence points: approach A from G# instead of G for maximum drama.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     EX 7 — B LOCRIAN
+════════════════════════════════════════════ -->
+<section id="ex7">
+  <div class="section-label">Exercise 07</div>
+  <div class="ex-card" style="--mode-color:var(--locrian)">
+    <div class="ex-header">
+      <div>
+        <div class="ex-num">Mode VII · B Locrian</div>
+        <div class="ex-title">The Diminished Coil — Symmetric Sequence</div>
+        <div class="ex-badges">
+          <span class="badge" style="color:var(--locrian);border-color:rgba(138,132,112,.4)">Locrian</span>
+          <span class="badge" style="color:var(--ink-dim);border-color:var(--border)">Diminished Symmetry</span>
+          <span class="badge" style="color:var(--ink-dim);border-color:var(--border)">Jazz/Metal</span>
+        </div>
+      </div>
+      <div class="difficulty">★★★★★</div>
+    </div>
+    <div class="ex-body">
+      <p>Because a diminished 7th chord repeats every minor 3rd, the same 3-note shape can be played at frets 7, 10, and 13 and it always fits. This <strong>symmetric diminished pattern</strong> creates an angular, disorienting phrase that resolves dramatically to Am.</p>
+
+      <div class="backing-bar" style="--mode-color:var(--locrian)">
+        <div class="backing-label">Over</div>
+        <div class="backing-chord active">Bm7♭5</div>
+        <div class="backing-arrow">→</div>
+        <div class="backing-chord">E7♭9</div>
+        <div class="backing-arrow">→</div>
+        <div class="backing-chord">Am</div>
+        <div class="backing-tempo">♩= 96</div>
+      </div>
+
+      <div class="notation-section">
+        <div class="notation-label">Notation + Rhythm Tab</div>
+        <div class="at-wrap" id="wrap7">
+          <div class="at-overlay" id="ov7">Engraving notation…</div>
+          <div class="at-surface" id="surf7"></div>
+        </div>
+        <div class="tab-fallback" id="fb7">
+          <div class="tab-fallback-label">Guitar Tab — same shape shifts up in minor 3rds</div>
+          <pre>
+e|--7-8-10--10-11-13--13-14-16------|
+B|----------------------------------|
+G|----------------------------------|
+   ← pos.7 → ← pos.10 → ← pos.13 →
+          </pre>
+        </div>
+      </div>
+
+      <h4 style="margin-top:18px">Locrian Voicings</h4>
+      <div class="voicing-grid" style="--mode-color:var(--locrian)">
+        <div class="voicing-item">
+          <div class="voicing-name">Bm7♭5</div>
+          <div class="voicing-type">Half-dim tonic</div>
+          <div class="voicing-frets">x 2 3 2 3 x</div>
+          <div class="voicing-fingering">· 1 3 2 4 ·</div>
+        </div>
+        <div class="voicing-item">
+          <div class="voicing-name">Bdim7</div>
+          <div class="voicing-type">Symmetric — shift +3 frets</div>
+          <div class="voicing-frets">x 2 3 2 3 2</div>
+          <div class="voicing-fingering">Same shape at 5, 8, 11</div>
+        </div>
+      </div>
+
+      <div class="interchange">
+        <div class="interchange-label">Locrian as Passing Mode — Minor ii–V–i</div>
+        <p style="margin:0;font-size:14px">Locrian is never the destination. Use it over <strong>Bm7♭5</strong>, shift to <strong>E Phrygian Dominant</strong> over E7♭9, resolve to <strong>A Aeolian</strong> on Am. This is the jazz minor ii–V–i: Locrian's instability makes the Aeolian resolution feel like genuine relief.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ornament">· · ·</div>
+
+<!-- ════════════════════════════════════════════
+     EX 8 — ii–V–I MODAL WALK
+════════════════════════════════════════════ -->
+<section id="ex8">
+  <div class="section-label">Exercise 08 — Full Modal Walk</div>
+  <div class="ex-card" style="--mode-color:var(--gold)">
+    <div class="ex-header">
+      <div>
+        <div class="ex-num">Dorian · Mixolydian · Ionian</div>
+        <div class="ex-title">The ii–V–I — Target Note Approach</div>
+        <div class="ex-badges">
+          <span class="badge" style="color:var(--dorian);border-color:rgba(76,154,90,.4)">Dorian</span>
+          <span class="badge" style="color:var(--mixolydian);border-color:rgba(201,120,76,.4)">Mixolydian</span>
+          <span class="badge" style="color:var(--ionian);border-color:rgba(201,168,76,.4)">Ionian</span>
+          <span class="badge" style="color:var(--ink-dim);border-color:var(--border)">Target Notes</span>
+        </div>
+      </div>
+      <div class="difficulty">★★★★★</div>
+    </div>
+    <div class="ex-body">
+      <p>The characteristic note of each mode arrives on the <strong>downbeat of its chord</strong>. The notes in between are just the journey — the arrivals outline the harmony. This is bebop melodic thinking applied to modal rock: always playing <em>toward</em> the next target.</p>
+
+      <div class="backing-bar">
+        <div class="backing-label">Progression</div>
+        <div class="backing-chord" style="border-color:var(--dorian);color:var(--dorian)">Dm9</div>
+        <div class="backing-arrow">→</div>
+        <div class="backing-chord" style="border-color:var(--mixolydian);color:var(--mixolydian)">G13</div>
+        <div class="backing-arrow">→</div>
+        <div class="backing-chord" style="border-color:var(--ionian);color:var(--ionian)">Cmaj9</div>
+        <div class="backing-tempo">2 bars each · ♩= 88</div>
+      </div>
+
+      <div class="notation-section">
+        <div class="notation-label">Notation + Rhythm Tab — Full ii–V–I Solo</div>
+        <div class="at-wrap" id="wrap8">
+          <div class="at-overlay" id="ov8">Engraving notation…</div>
+          <div class="at-surface" id="surf8"></div>
+        </div>
+        <div class="tab-fallback" id="fb8">
+          <div class="tab-fallback-label">Guitar Tab — target note on each chord change</div>
+          <pre>
+  ← Dm9 (Dorian) target: B♮ ──────────────────────
+e|--10-12-14-12-10-9h10-12-14---------|
+  ← G13 (Mixolydian) target: F♮ ──────────────────
+e|--15b17-15-13-15-13-12-10-----------|
+  ← Cmaj9 (Ionian) target: E ─────────────────────
+e|--12-15-12h14p12-10-12--------------|
+          </pre>
+        </div>
+      </div>
+
+      <div class="insight">
+        <div class="insight-label">The Target Note Concept</div>
+        <p style="margin:0;font-size:14px">Over Dm9 → aim at <strong>B♮ (Dorian ♮6)</strong>. Over G13 → <strong>F♮ (Mixolydian ♭7)</strong> on beat 1. Over Cmaj9 → <strong>E (major 3rd)</strong> for resolution. Think forward — place the next target before its chord arrives. This is how pros make chord changes audible in their solos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     EX 9 — MINOR TRIO
+════════════════════════════════════════════ -->
+<section id="ex9">
+  <div class="section-label">Exercise 09 — The Minor Trio</div>
+  <div class="ex-card" style="--mode-color:var(--aeolian)">
+    <div class="ex-header">
+      <div>
+        <div class="ex-num">Aeolian · Dorian · Phrygian over Dm</div>
+        <div class="ex-title">Three Colours, One Chord</div>
+        <div class="ex-badges">
+          <span class="badge" style="color:var(--aeolian);border-color:rgba(122,76,201,.4)">Aeolian</span>
+          <span class="badge" style="color:var(--dorian);border-color:rgba(76,154,90,.4)">Dorian</span>
+          <span class="badge" style="color:var(--phrygian);border-color:rgba(201,76,76,.4)">Phrygian</span>
+        </div>
+      </div>
+      <div class="difficulty">★★★★☆</div>
+    </div>
+    <div class="ex-body">
+      <p>Static Dm vamp. Same rhythmic shape, same contour — only the <strong>6th and 2nd degree</strong> change between versions. This is the most important ear-training exercise in modal guitar. When you can hear the difference without thinking about the notes, modes have become a language.</p>
+
+      <div class="backing-bar" style="--mode-color:var(--aeolian)">
+        <div class="backing-label">Over</div>
+        <div class="backing-chord active">Dm (static vamp)</div>
+        <div class="backing-tempo">♩= 80 · hold indefinitely</div>
+      </div>
+
+      <div class="notation-section">
+        <div class="notation-label">Notation + Rhythm Tab — All Three Versions</div>
+        <div class="at-wrap" id="wrap9">
+          <div class="at-overlay" id="ov9">Engraving notation…</div>
+          <div class="at-surface" id="surf9"></div>
+        </div>
+        <div class="tab-fallback" id="fb9">
+          <div class="tab-fallback-label">Guitar Tab — three modes, one chord</div>
+          <pre>
+D Aeolian  (♭6 = B♭, fret 13):
+e|--10-13-10-8-10-8-5--|
+
+D Dorian   (♮6 = B♮, fret 12):
+e|--10-12-10-9-10-9-7--|
+
+D Phrygian (♭2 = E♭, fret 11):
+e|--10-11-10-8-10-8-5--|
+          </pre>
+        </div>
+      </div>
+
+      <div class="insight">
+        <div class="insight-label">The One-Note Revelation</div>
+        <p style="margin:0;font-size:14px">Aeolian → Dorian is <strong>B♭ → B♮</strong>: one semitone, the difference between melancholic and soulful. Aeolian → Phrygian is <strong>E♮ → E♭</strong>: one semitone, the difference between classic minor and menacing. Modes are not seven different scales. They are <em>the same notes with one or two pivots that change everything</em>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     EX 10 — MODAL INTERCHANGE
+════════════════════════════════════════════ -->
+<section id="ex10">
+  <div class="section-label">Exercise 10 — Modal Interchange</div>
+  <div class="ex-card" style="--mode-color:var(--violet)">
+    <div class="ex-header">
+      <div>
+        <div class="ex-num">Advanced Harmony Concept</div>
+        <div class="ex-title">Borrowing Across Parallel Modes</div>
+        <div class="ex-badges">
+          <span class="badge" style="color:var(--violet);border-color:rgba(154,108,233,.4)">Modal Interchange</span>
+          <span class="badge" style="color:var(--ink-dim);border-color:var(--border)">Borrowed Chords</span>
+          <span class="badge" style="color:var(--ink-dim);border-color:var(--border)">Chromatic Targets</span>
+        </div>
+      </div>
+      <div class="difficulty">★★★★★</div>
+    </div>
+    <div class="ex-body">
+      <p>Borrowing chords from <strong>parallel modes</strong> (same root, different scale) creates unexpected emotional turns that feel right even though they break diatonic rules. The solo must acknowledge borrowed chords by targeting the "foreign" accidental on the downbeat.</p>
+
+      <div class="two-col" style="margin:20px 0">
+        <div>
+          <h4>Common Borrowed Chords in C Major</h4>
+          <div style="margin-bottom:10px;padding:12px;border:1px solid var(--border);border-radius:4px;background:#0a0a08">
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--violet);letter-spacing:0.2em;margin-bottom:5px">FROM C AEOLIAN</div>
+            <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--ink)">♭VII · B♭ major</div>
+            <div style="font-size:13px;color:var(--ink-dim);margin-top:4px">C → B♭ → F → C. "Sweet Child O' Mine", "Hey Jude" outro. Target: <span class="borrow">B♭</span> on the downbeat.</div>
+          </div>
+          <div style="margin-bottom:10px;padding:12px;border:1px solid var(--border);border-radius:4px;background:#0a0a08">
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--violet);letter-spacing:0.2em;margin-bottom:5px">FROM C PHRYGIAN</div>
+            <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--ink)">♭II · D♭ major</div>
+            <div style="font-size:13px;color:var(--ink-dim);margin-top:4px">The Neapolitan. Dramatic surprise. Target: <span class="borrow">D♭</span> on arrival.</div>
+          </div>
+          <div style="padding:12px;border:1px solid var(--border);border-radius:4px;background:#0a0a08">
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--violet);letter-spacing:0.2em;margin-bottom:5px">FROM C LYDIAN</div>
+            <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--ink)">#IV · Fmaj7#11</div>
+            <div style="font-size:13px;color:var(--ink-dim);margin-top:4px">The "lift". C → Fmaj7#11 → G → C. Beatles, Williams. Target: <span class="borrow">B♮</span> (#4).</div>
+          </div>
+        </div>
+        <div>
+          <h4>Soloing Over Interchange</h4>
+          <p style="font-size:14px">When a borrowed chord arrives, your melody must <strong>land on the accidental that makes it foreign</strong> — on the downbeat. If you ignore it, the borrowed chord sounds like a mistake. If you target it, it sounds inevitable.</p>
+          <div style="padding:14px;background:rgba(154,108,233,.05);border:1px solid rgba(154,108,233,.2);border-radius:4px;margin-top:10px">
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--violet);margin-bottom:8px;letter-spacing:0.2em;text-transform:uppercase">The Rule in Practice</div>
+            <p style="font-size:13px;margin:0">C major → B♭: land on <strong>B♭ on beat 1</strong>.<br>B♭ → back to C: return to B♮ on beat 1.<br>That one semitone oscillation carries the entire emotional arc.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="notation-section">
+        <div class="notation-label">Notation + Rhythm Tab — Interchange Solo in C</div>
+        <div class="at-wrap" id="wrap10">
+          <div class="at-overlay" id="ov10">Engraving notation…</div>
+          <div class="at-surface" id="surf10"></div>
+        </div>
+        <div class="tab-fallback" id="fb10">
+          <div class="tab-fallback-label">Guitar Tab</div>
+          <pre>
+  C major                B♭ (borrowed ♭VII)
+e|--0-2-4-5-4-2-0----|--1-3-5-3-1-0------|
+  F major              C — resolution
+e|--1-3-5-3-1--------|--0-4-5-4-2-0------|
+          </pre>
+        </div>
+      </div>
+
+      <div class="insight">
+        <div class="insight-label">The Advanced Mindset</div>
+        <p style="margin:0;font-size:14px">At the expert level you stop asking "which mode?" and ask: <strong>"what colour does this moment need?"</strong> Modal interchange is how you create that colour deliberately. The borrowed chord is a door — your melody decides whether to walk through it, peek through it, or lean against it. All three are valid. The point is you are <em>choosing</em>, not reacting.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /.page -->
+
+<a class="back-top" href="#" id="backTop">↑ TOP</a>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// ALPHATAB — correct API usage for v1.3.x
+// Key fixes vs previous version:
+//   1. Render into a visible div (not display:none)
+//   2. Use settings.core.tex = true for alphaTex string input
+//   3. Correct settings structure (no nested display.display)
+//   4. Use api.scoreLoaded event (not api.renderFinished for tex)
+//   5. Show fallback tab on any error
+// ══════════════════════════════════════════════════════════════
+
+// alphaTex scores — one per exercise
+// Format: valid alphaTex v1 string
+// Notes: use full pitch names (c4, db4, etc.) NOT fret.string notation here
+const SCORES = {
+  at1: `\\title "C Ionian — Legato Run"
+\\tempo 92
+\\instrument 25
+.
+:8 c5 d5 e5 f5 gb5 f5 e5 d5 |
+c5 b4 a4 g4 e4 f4 g4 c5 |`,
+
+  at2: `\\title "D Dorian — Soul Bend"
+\\tempo 84
+\\instrument 25
+.
+:q d5 :8 f5 a5 b5 a5 :q d5 |
+:8 b4 a4 f4 d4 :q a3 d4 |`,
+
+  at3: `\\title "E Phrygian — Chromatic Enclosure"
+\\tempo 120
+\\instrument 25
+.
+:8 e4 f4 e4 g4 f4 e4 g4 b4 |
+g4 e4 b3 d4 e4 :q e4 :h r |`,
+
+  at4: `\\title "F Lydian — Sweep Arpeggio"
+\\tempo 76
+\\instrument 25
+.
+:8 f3 c4 f4 a4 c5 f5 b5 f5 |
+c5 a4 f4 c4 :h f3 |`,
+
+  at5: `\\title "G Mixolydian — Blues-Rock Hybrid"
+\\tempo 100
+\\instrument 25
+.
+:8 g4 b4 d5 f5 d5 b4 g4 f4 |
+:q d4 b3 :8 g3 a3 b3 g4 |`,
+
+  at6: `\\title "A Aeolian — Descending 3rds Sequence"
+\\tempo 68
+\\instrument 25
+.
+:8 a5 f5 e5 c5 d5 b4 c5 a4 |
+b4 g4 a4 f4 g4 e4 :q a3 |`,
+
+  at7: `\\title "B Locrian — Diminished Symmetry"
+\\tempo 96
+\\instrument 25
+.
+:8 b4 c5 f5 b4 c5 f5 ab5 f5 |
+c5 ab4 f4 c4 :q b3 :h r |`,
+
+  at8: `\\title "ii-V-I Modal Walk"
+\\tempo 88
+\\instrument 25
+.
+:8 b4 d5 f5 a5 b5 a5 f5 d5 |
+f5 e5 d5 b4 a4 f4 d4 b3 |
+e5 g5 b5 c6 b5 g5 e5 c5 |`,
+
+  at9: `\\title "Minor Trio — Three Modes on Dm"
+\\tempo 80
+\\instrument 25
+.
+\\section "D Aeolian"
+:8 d5 bb4 a4 f4 d4 a3 d4 f4 |
+\\section "D Dorian"
+:8 d5 b4 a4 f4 d4 a3 d4 f4 |
+\\section "D Phrygian"
+:8 d5 bb4 a4 f4 d4 a3 d4 eb4 |`,
+
+  at10: `\\title "Modal Interchange — C with borrowed Bb"
+\\tempo 88
+\\instrument 25
+.
+\\section "C Ionian"
+:8 c5 e5 g5 b5 a5 g5 e5 c5 |
+\\section "Bb borrowed"
+:8 bb4 d5 f5 bb5 a5 f5 d5 bb4 |
+\\section "F major"
+:8 f4 a4 c5 f5 e5 c5 a4 f4 |
+\\section "C resolution"
+:q c5 e5 :h c5 |`,
+};
+
+function initScore(surfaceId, overlayId, fallbackId, texStr) {
+  const surface  = document.getElementById(surfaceId);
+  const overlay  = document.getElementById(overlayId);
+  const fallback = document.getElementById(fallbackId);
+
+  if (!surface || typeof alphaTab === 'undefined') {
+    if (fallback) fallback.classList.add('visible');
+    if (overlay)  overlay.classList.add('hidden');
+    return;
+  }
+
+  try {
+    const api = new alphaTab.AlphaTabApi(surface, {
+      core: {
+        tex: true,                        // parse alphaTex from the tex setting
+        fontDirectory: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.3.0/dist/font/',
+      },
+      display: {
+        staveProfile: 3,  // TabMixed — standard notation staff + tab staff with rhythm stems
+        scale: 0.85,
+        layoutMode: 0,    // Page layout
+        barsPerRow: 4,
+      },
+      notation: {
+        rhythmMode: 1,    // ShowWithBars — rhythm stems on the tab staff
+      },
+      player: { enablePlayer: false },
+    });
+
+    // Load the score from tex string
+    api.tex(texStr);
+
+    api.renderFinished.on(function() {
+      if (overlay) overlay.classList.add('hidden');
+    });
+
+    api.error.on(function(err) {
+      console.warn('AlphaTab error:', err);
+      if (fallback) fallback.classList.add('visible');
+      if (overlay)  overlay.classList.add('hidden');
+    });
+
+  } catch (err) {
+    console.warn('AlphaTab init failed:', err);
+    if (fallback) fallback.classList.add('visible');
+    if (overlay)  overlay.classList.add('hidden');
+  }
+}
+
+// Stagger initialisation so the browser doesn't block on all 10 at once
+window.addEventListener('load', function() {
+  const entries = [
+    ['surf1',  'ov1',  'fb1',  SCORES.at1],
+    ['surf2',  'ov2',  'fb2',  SCORES.at2],
+    ['surf3',  'ov3',  'fb3',  SCORES.at3],
+    ['surf4',  'ov4',  'fb4',  SCORES.at4],
+    ['surf5',  'ov5',  'fb5',  SCORES.at5],
+    ['surf6',  'ov6',  'fb6',  SCORES.at6],
+    ['surf7',  'ov7',  'fb7',  SCORES.at7],
+    ['surf8',  'ov8',  'fb8',  SCORES.at8],
+    ['surf9',  'ov9',  'fb9',  SCORES.at9],
+    ['surf10', 'ov10', 'fb10', SCORES.at10],
+  ];
+
+  entries.forEach(function(args, i) {
+    setTimeout(function() {
+      initScore(args[0], args[1], args[2], args[3]);
+    }, i * 300);
+  });
+});
+
+// ══════════════════════════════════════════════════════════════
+// NAV HIGHLIGHT — clean IntersectionObserver, no ternary hack
+// ══════════════════════════════════════════════════════════════
+(function() {
+  var sections = document.querySelectorAll('section[id]');
+  var navLinks = document.querySelectorAll('nav a');
+
+  if (!('IntersectionObserver' in window)) return;
+
+  sections.forEach(function(section) {
+    new IntersectionObserver(function(entries) {
+      if (entries[0].isIntersecting) {
+        navLinks.forEach(function(a) { a.classList.remove('active'); });
+        var match = document.querySelector('nav a[href="#' + section.id + '"]');
+        if (match) match.classList.add('active');
+      }
+    }, { rootMargin: '-40% 0px -55% 0px' }).observe(section);
+  });
+})();
+
+// ══════════════════════════════════════════════════════════════
+// BACK TO TOP
+// ══════════════════════════════════════════════════════════════
+(function() {
+  var btn = document.getElementById('backTop');
+  window.addEventListener('scroll', function() {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+})();
+</script>
+</body>
+</html>
